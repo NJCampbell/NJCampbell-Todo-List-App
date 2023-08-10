@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import TodoFooter from "./TodoFooter";
 
 const Todo = () => {
   const [task, setTask] = useState([]);
   const [newTask, setNewTask] = useState("");
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
 
   function handleAddTask() {
     const newTaskItem = {
@@ -15,7 +15,9 @@ const Todo = () => {
     setTask((previousTask) => [...previousTask, newTaskItem]);
     setNewTask("");
     setCount((count) => count + 1);
+    assignNewTask();
   }
+  // assignNewTask() added into object initiation
   function handleDeleteTask(count) {
     let setTasks = (previousTask) =>
       previousTask.filter((task) => task.count !== count);
@@ -28,6 +30,28 @@ const Todo = () => {
     }
   }
 
+  function assignNewTask() {
+    fetch("https://playground.4geeks.com/apis/fake/todos/user/njcamp", {
+      method: "PUT",
+      body: JSON.stringify(task),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw Error(res.statusText);
+        return res.json();
+      })
+      .then((response) => console.log("Success:", response))
+      .catch((error) => console.error(error));
+  }
+
+  useEffect(() => {
+    fetch("https://playground.4geeks.com/apis/fake/todos/user/njcamp")
+      .then((response) => response.json())
+      .then((data) => setTask(data));
+  }, []);
+  // removing dependency array allowed the tasks to be added but not rendering
   return (
     <>
       <div className="todo-wrapper">
@@ -62,3 +86,17 @@ const Todo = () => {
 };
 
 export default Todo;
+
+// fetch('https://example.com/users', {
+//   method: 'PUT', // or 'POST'
+//   body: JSON.stringify(data), // data can be a `string` or  an {object} which comes from somewhere further above in our application
+//   headers:{
+//     'Content-Type': 'application/json'
+//   }
+// })
+// .then(res => {
+// 	if (!res.ok) throw Error(res.statusText);
+// 	return res.json();
+// })
+// .then(response => console.log('Success:', response))
+// .catch(error => console.error(error));

@@ -5,8 +5,8 @@ const TodoList = ({ task, setTask, handleDeleteTask, count }) => {
     <>
       <div className="list-items">
         <li key={task.count}>
-          {task.content}
-
+          {task.label}
+          {/* changed task.content to task.label to pull from api */}
           <button
             className="delete-button"
             onClick={() => handleDeleteTask(task.count)}
